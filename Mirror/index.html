@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mirrored Elements</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #f4f4f9;
+        }
+
+        .container {
+            display: flex;
+            gap: 20px;
+            position: relative;
+        }
+
+        .box {
+            width: 100px;
+            height: 100px;
+            background-color: coral;
+            color: white;
+            text-align: center;
+            line-height: 100px;
+            font-weight: bold;
+            border-radius: 10px;
+        }
+
+        /* Original Elements */
+        .original {
+            z-index: 1;
+        }
+
+        /* Mirrored Elements */
+        .mirrored {
+            transform: scaleX(-1); /* Flip Horizontally */
+            opacity: 0.5; /* Optional: Make them look like reflections */
+            z-index: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Original Elements -->
+        <div class="box original">Box 1</div>
+        <div class="box original">Box 2</div>
+        <div class="box original">Box 3</div>
+
+        <!-- Mirrored Elements -->
+        <div class="box mirrored">Box 1</div>
+        <div class="box mirrored">Box 2</div>
+        <div class="box mirrored">Box 3</div>
+    </div>
+</body>
+</html>

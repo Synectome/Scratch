@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musical Scale Modes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #ff7e5f, #feb47b);
+            color: #fff;
+            text-align: center;
+            padding: 20px;
+        }
+        h1 {
+            font-size: 3em;
+            margin-bottom: 20px;
+        }
+        .mode-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+        }
+        .mode {
+            background: #fff;
+            color: #333;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            width: 250px;
+            padding: 15px;
+            transition: transform 0.3s;
+        }
+        .mode:hover {
+            transform: scale(1.05);
+        }
+        button {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Musical Scale Modes</h1>
+    <div class="mode-container" id="modes"></div>
+    <button onclick="switchKey()">Switch Key</button>
+    <script>
+        const jsonData = {
+                        "C": {
+                            "ionian": ["C", "D", "E", "F", "G", "A", "B", "C"],
+                            "dorian": ["C", "D", "D#", "F", "G", "A", "A#", "C"],
+                            "phrygian": ["C", "C#", "D#", "F", "G", "G#", "A#", "C"],
+                            "lydian": ["C", "D", "E", "F#", "G", "A", "B", "C"],
+                            "mixolydian": ["C", "D", "E", "F", "G", "A", "A#", "C"],
+                            "aeolian": ["C", "D", "D#", "F", "G", "G#", "A#", "C"],
+                            "locrian": ["C", "C#", "D#", "F", "F#", "G#", "A#", "C"],
+                        },
+                        "C#": {
+                            "ionian": ["C#", "D#", "F", "F#", "G#", "A#", "C", "C#"],
+                            "dorian": ["C#", "D#", "E", "F#", "G#", "A#", "B", "C#"],
+                            "phrygian": ["C#", "D", "E", "F#", "G#", "A", "B", "C#"],
+                            "lydian": ["C#", "D#", "F", "G", "G#", "A#", "C", "C#"],
+                            "mixolydian": ["C#", "D#", "F", "F#", "G#", "A#", "B", "C#"],
+                            "aeolian": ["C#", "D#", "E", "F#", "G#", "A", "B", "C#"],
+                            "locrian": ["C#", "D", "E", "F#", "G", "A", "B", "C#"],
+                        },
+                        "D": {
+                            "ionian": ["D", "E", "F#", "G", "A", "B", "C#", "D"],
+                            "dorian": ["D", "E", "F", "G", "A", "B", "C", "D"],
+                            "phrygian": ["D", "D#", "F", "G", "A", "A#", "C", "D"],
+                            "lydian": ["D", "E", "F#", "G#", "A", "B", "C#", "D"],
+                            "mixolydian": ["D", "E", "F#", "G", "A", "B", "C", "D"],
+                            "aeolian": ["D", "E", "F", "G", "A", "A#", "C", "D"],
+                            "locrian": ["D", "D#", "F", "G", "G#", "A#", "C", "D"],
+                        },
+                        "D#": {
+                            "ionian": ["D#", "F", "G", "G#", "A#", "C", "D", "D#"],
+                            "dorian": ["D#", "F", "F#", "G#", "A#", "C", "C#", "D#"],
+                            "phrygian": ["D#", "E", "F#", "G#", "A#", "B", "C#", "D#"],
+                            "lydian": ["D#", "F", "G", "A", "A#", "C", "D", "D#"],
+                            "mixolydian": ["D#", "F", "G", "G#", "A#", "C", "C#", "D#"],
+                            "aeolian": ["D#", "F", "F#", "G#", "A#", "B", "C#", "D#"],
+                            "locrian": ["D#", "E", "F#", "G#", "A", "B", "C#", "D#"],
+                        },
+                        "E": {
+                            "ionian": ["E", "F#", "G#", "A", "B", "C#", "D#", "E"],
+                            "dorian": ["E", "F#", "G", "A", "B", "C#", "D", "E"],
+                            "phrygian": ["E", "F", "G", "A", "B", "C", "D", "E"],
+                            "lydian": ["E", "F#", "G#", "A#", "B", "C#", "D#", "E"],
+                            "mixolydian": ["E", "F#", "G#", "A", "B", "C#", "D", "E"],
+                            "aeolian": ["E", "F#", "G", "A", "B", "C", "D", "E"],
+                            "locrian": ["E", "F", "G", "A", "A#", "C", "D", "E"],
+                        },
+                        "F": {
+                            "ionian": ["F", "G", "A", "A#", "C", "D", "E", "F"],
+                            "dorian": ["F", "G", "G#", "A#", "C", "D", "D#", "F"],
+                            "phrygian": ["F", "F#", "G#", "A#", "C", "C#", "D#", "F"],
+                            "lydian": ["F", "G", "A", "B", "C", "D", "E", "F"],
+                            "mixolydian": ["F", "G", "A", "A#", "C", "D", "D#", "F"],
+                            "aeolian": ["F", "G", "G#", "A#", "C", "C#", "D#", "F"],
+                            "locrian": ["F", "F#", "G#", "A#", "B", "C#", "D#", "F"],
+                        },
+                        "F#": {
+                            "ionian": ["F#", "G#", "A#", "B", "C#", "D#", "F", "F#"],
+                            "dorian": ["F#", "G#", "A", "B", "C#", "D#", "E", "F#"],
+                            "phrygian": ["F#", "G", "A", "B", "C#", "D", "E", "F#"],
+                            "lydian": ["F#", "G#", "A#", "C", "C#", "D#", "F", "F#"],
+                            "mixolydian": ["F#", "G#", "A#", "B", "C#", "D#", "E", "F#"],
+                            "aeolian": ["F#", "G#", "A", "B", "C#", "D", "E", "F#"],
+                            "locrian": ["F#", "G", "A", "B", "C", "D", "E", "F#"],
+                        },
+                        "G": {
+                            "ionian": ["G", "A", "B", "C", "D", "E", "F#", "G"],
+                            "dorian": ["G", "A", "A#", "C", "D", "E", "F", "G"],
+                            "phrygian": ["G", "G#", "A#", "C", "D", "D#", "F", "G"],
+                            "lydian": ["G", "A", "B", "C#", "D", "E", "F#", "G"],
+                            "mixolydian": ["G", "A", "B", "C", "D", "E", "F", "G"],
+                            "aeolian": ["G", "A", "A#", "C", "D", "D#", "F", "G"],
+                            "locrian": ["G", "G#", "A#", "C", "C#", "D#", "F", "G"],
+                        },
+                        "G#": {
+                            "ionian": ["G#", "A#", "C", "C#", "D#", "F", "G", "G#"],
+                            "dorian": ["G#", "A#", "B", "C#", "D#", "F", "F#", "G#"],
+                            "phrygian": ["G#", "A", "B", "C#", "D#", "E", "F#", "G#"],
+                            "lydian": ["G#", "A#", "C", "D", "D#", "F", "G", "G#"],
+                            "mixolydian": ["G#", "A#", "C", "C#", "D#", "F", "F#", "G#"],
+                            "aeolian": ["G#", "A#", "B", "C#", "D#", "E", "F#", "G#"],
+                            "locrian": ["G#", "A", "B", "C#", "D", "E", "F#", "G#"],
+                        },
+                        "A": {
+                            "ionian": ["A", "B", "C#", "D", "E", "F#", "G#", "A"],
+                            "dorian": ["A", "B", "C", "D", "E", "F#", "G", "A"],
+                            "phrygian": ["A", "A#", "C", "D", "E", "F", "G", "A"],
+                            "lydian": ["A", "B", "C#", "D#", "E", "F#", "G#", "A"],
+                            "mixolydian": ["A", "B", "C#", "D", "E", "F#", "G", "A"],
+                            "aeolian": ["A", "B", "C", "D", "E", "F", "G", "A"],
+                            "locrian": ["A", "A#", "C", "D", "D#", "F", "G", "A"],
+                        },
+                        "A#": {
+                            "ionian": ["A#", "C", "D", "D#", "F", "G", "A", "A#"],
+                            "dorian": ["A#", "C", "C#", "D#", "F", "G", "G#", "A#"],
+                            "phrygian": ["A#", "B", "C#", "D#", "F", "F#", "G#", "A#"],
+                            "lydian": ["A#", "C", "D", "E", "F", "G", "A", "A#"],
+                            "mixolydian": ["A#", "C", "D", "D#", "F", "G", "G#", "A#"],
+                            "aeolian": ["A#", "C", "C#", "D#", "F", "F#", "G#", "A#"],
+                            "locrian": ["A#", "B", "C#", "D#", "E", "F#", "G#", "A#"],
+                        },
+                        "B": {
+                            "ionian": ["B", "C#", "D#", "E", "F#", "G#", "A#", "B"],
+                            "dorian": ["B", "C#", "D", "E", "F#", "G#", "A", "B"],
+                            "phrygian": ["B", "C", "D", "E", "F#", "G", "A", "B"],
+                            "lydian": ["B", "C#", "D#", "F", "F#", "G#", "A#", "B"],
+                            "mixolydian": ["B", "C#", "D#", "E", "F#", "G#", "A", "B"],
+                            "aeolian": ["B", "C#", "D", "E", "F#", "G", "A", "B"],
+                            "locrian": ["B", "C", "D", "E", "F", "G", "A", "B"],
+                        },
+                    };
+
+        let currentKey = "C";
+
+        function displayModes() {
+            const container = document.getElementById("modes");
+            container.innerHTML = "";
+            for (let mode in jsonData[currentKey]) {
+                const div = document.createElement("div");
+                div.classList.add("mode");
+                div.innerHTML = `<h3>${mode.charAt(0).toUpperCase() + mode.slice(1)}</h3><p>${jsonData[currentKey][mode].join(" - ")}</p>`;
+                container.appendChild(div);
+            }
+        }
+
+        function switchKey() {
+            currentKey = currentKey === "C" ? "G" : "C";
+            displayModes();
+        }
+
+        displayModes();
+    </script>
+</body>
+</html>

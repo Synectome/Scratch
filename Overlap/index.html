@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Overlapping Circles</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: #f4f4f9;
+        }
+
+        .container {
+            position: relative;
+            display: flex;
+            gap: 0; /* No gap to enable overlapping */
+        }
+
+        .circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background-color: coral;
+            position: relative;
+            margin-left: -50px; /* Negative margin for 50% overlap */
+            border: 2px solid #fff;
+        }
+
+        /* Different colors for each circle */
+        .circle:nth-child(1) {
+            background-color: #ff6b6b;
+        }
+        .circle:nth-child(2) {
+            background-color: #ff9f43;
+        }
+        .circle:nth-child(3) {
+            background-color: #54a0ff;
+        }
+        .circle:nth-child(4) {
+            background-color: #5f27cd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+        <div class="circle"></div>
+    </div>
+</body>
+</html>

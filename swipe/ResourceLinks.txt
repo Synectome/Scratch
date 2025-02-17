@@ -1,0 +1,11 @@
+Front End Web Design Links
+
+#### Colour Schemas ####
+    https://www.designerlynx.io/colour-resources
+        https://www.colorhunt.co/
+
+
+#### CSS Snippets ####
+    https://codyhouse.co/nuggets
+    https://codemyui.com/
+    

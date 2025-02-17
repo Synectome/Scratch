@@ -1,0 +1,3 @@
+The idea is :
+    - Given 2 chords, find the available paths between them (without repeating chords (computation limitation, not stylistic))
+    - This means if you have CMajor7, and B7_flat9, what is the route between them, taking into consideration the wheel of 5ths, modal interchange, and chords that exist within different keys.
