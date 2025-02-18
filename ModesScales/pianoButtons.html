@@ -56,6 +56,46 @@
 </head>
 <body>
     <div class="keyboard">
+        <style>
+            .keyboard {
+            display: flex;
+            justify-content: center;
+            align-items: top;
+            margin:0
+        }
+        .key {
+            width: 60px;
+            height: 200px;
+            border: 1px solid #000;
+            background: white;
+            text-align: center;
+            line-height: 340px;
+            font-weight: bold;
+            color: black;
+            box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+            box-sizing: border-box;
+            cursor: pointer;
+            transition: transform 0.2s;
+            border-bottom-right-radius: 5px;
+            border-bottom-left-radius: 5px;
+        }
+        .key:active {
+            transform: scale(0.95);
+        }
+        .key.black {
+            width: 40px;
+            height: 130px;
+            background: black;
+            color: white;
+            margin-left: -20px;
+            margin-right: -20px;
+            z-index: 1;
+            line-height: 20px;
+        }
+        #key_black_text{
+            margin-top:80px;
+        }
+        </style>
         <div class="key">C</div>
         <div class="key black"><div id="key_black_text">C# /D♭</div></div>
         <div class="key">D</div>

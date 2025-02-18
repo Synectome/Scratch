@@ -97,6 +97,81 @@
     <h2>Selected Scale:</h2>
     <p id="scale-notes"></p>
   </div>
+  <div class="keyboard">
+    <style>
+        .keyboard {
+        display: flex;
+        justify-content: center;
+        align-items: top;
+        margin:10px;
+    }
+    .key {
+        width: 60px;
+        height: 200px;
+        border: 1px solid #000;
+        background: white;
+        text-align: center;
+        line-height: 340px;
+        font-weight: bold;
+        color: black;
+        box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+        box-sizing: border-box;
+        cursor: pointer;
+        transition: transform 0.2s;
+        border-bottom-right-radius: 5px;
+        border-bottom-left-radius: 5px;
+    }
+    .key:active {
+        transform: scale(0.95);
+        animation: glow 1s forwards;
+    }
+    .key.black {
+        width: 40px;
+        height: 130px;
+        background: black;
+        color: white;
+        margin-left: -20px;
+        margin-right: -20px;
+        z-index: 1;
+        line-height: 20px;
+    }
+    #key_black_text{
+        margin-top:80px;
+    }
+    @keyframes glow {
+      from {
+        box-shadow: 0 0 1px 1px rgba(255, 255, 255, 0.25);
+      }
+      to {
+        box-shadow: 0 0 25px 10px rgba(31, 135, 233, 1);
+      }
+    }
+    </style>
+        <div class="key">C</div>
+        <div class="key black"><div id="key_black_text">C# /D♭</div></div>
+        <div class="key">D</div>
+        <div class="key black"><div id="key_black_text">D# /E♭</div></div>
+        <div class="key">E</div>
+        <div class="key">F</div>
+        <div class="key black"><div id="key_black_text">F# /G♭</div></div>
+        <div class="key">G</div>
+        <div class="key black"><div id="key_black_text">G# /A♭</div></div>
+        <div class="key">A</div>
+        <div class="key black"><div id="key_black_text">A# /B♭</div></div>
+        <div class="key">B</div>
+        <div class="key">C</div>
+        <div class="key black"><div id="key_black_text">C# /D♭</div></div>
+        <div class="key">D</div>
+        <div class="key black"><div id="key_black_text">D# /E♭</div></div>
+        <div class="key">E</div>
+        <div class="key">F</div>
+        <div class="key black"><div id="key_black_text">F# /G♭</div></div>
+        <div class="key">G</div>
+        <div class="key black"><div id="key_black_text">G# /A♭</div></div>
+        <div class="key">A</div>
+        <div class="key black"><div id="key_black_text">A# /B♭</div></div>
+        <div class="key">B</div>
+    </div>
 
   <script>
     // JSON data with musical scales
