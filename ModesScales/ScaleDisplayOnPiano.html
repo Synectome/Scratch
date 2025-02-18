@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Musical Scale Selector</title>
+  <style>
+    body {
+      background: linear-gradient(to right, #ff7e5f, #feb47b);
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 20px;
+      color: #333;
+      text-align: center;
+    }
+    h1 {
+      color: #fff;
+      margin-bottom: 30px;
+    }
+    .wheel-container {
+      display: flex;
+      justify-content: center;
+      gap: 50px;
+      margin-bottom: 40px;
+    }
+    .wheel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .wheel-btn {
+      background: #4CAF50;
+      border: none;
+      color: white;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 18px;
+      border-radius: 4px;
+      width: 60px;
+      margin: 5px 0;
+    }
+    .wheel-btn:hover {
+      background: #45a049;
+    }
+    .wheel-display {
+      width: 100px;
+      height: 50px;
+      overflow: hidden;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.8);
+      position: relative;
+    }
+    .wheel-list {
+      transition: transform 0.3s ease-in-out;
+    }
+    .wheel-item {
+      height: 50px;
+      line-height: 50px;
+      font-weight: bold;
+      font-size: 20px;
+    }
+    #scale-display {
+      background: rgba(255,255,255,0.9);
+      padding: 20px;
+      border-radius: 8px;
+      display: inline-block;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-bottom: 40px;
+    }
+    /* Piano Keyboard Styles */
+    .keyboard {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 10px;
+    }
+    .key {
+      width: 60px;
+      height: 200px;
+      border: 1px solid #000;
+      background: white;
+      text-align: center;
+      line-height: 340px;
+      font-weight: bold;
+      color: black;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius: 5px;
+      position: relative;
+    }
+    .key:active {
+      transform: scale(0.95);
+    }
+    .key.black {
+      width: 40px;
+      height: 130px;
+      background: black;
+      color: white;
+      margin-left: -20px;
+      margin-right: -20px;
+      z-index: 1;
+      line-height: 20px;
+    }
+    #key_black_text {
+      margin-top: 80px;
+    }
+    /* Red glow animation for highlighted keys */
+    @keyframes redGlow {
+      from { box-shadow: none; }
+      to { background:red; }
+    }
+    .highlight {
+      animation: redGlow 0.5s forwards;
+    }
+  </style>
+</head>
+<body>
+  <h1>Musical Scale Selector</h1>
+  <div class="wheel-container">
+    <!-- Key Selector Wheel -->
+    <div class="wheel" id="key-wheel">
+      <button class="wheel-btn" onclick="moveWheel('key', -1)">▲</button>
+      <div class="wheel-display">
+        <div class="wheel-list" id="key-list">
+          <!-- Items inserted via JavaScript -->
+        </div>
+      </div>
+      <button class="wheel-btn" onclick="moveWheel('key', 1)">▼</button>
+    </div>
+    <!-- Mode Selector Wheel -->
+    <div class="wheel" id="mode-wheel">
+      <button class="wheel-btn" onclick="moveWheel('mode', -1)">▲</button>
+      <div class="wheel-display">
+        <div class="wheel-list" id="mode-list">
+          <!-- Items inserted via JavaScript -->
+        </div>
+      </div>
+      <button class="wheel-btn" onclick="moveWheel('mode', 1)">▼</button>
+    </div>
+  </div>
+  <div id="scale-display">
+    <h2>Selected Scale:</h2>
+    <p id="scale-notes"></p>
+  </div>
+  <div class="keyboard">
+    <style>
+      /* Inline keyboard style block (if needed, otherwise can be merged) */
+    </style>
+    <div class="key">C</div>
+    <div class="key black"><div id="key_black_text">C# /D♭</div></div>
+    <div class="key">D</div>
+    <div class="key black"><div id="key_black_text">D# /E♭</div></div>
+    <div class="key">E</div>
+    <div class="key">F</div>
+    <div class="key black"><div id="key_black_text">F# /G♭</div></div>
+    <div class="key">G</div>
+    <div class="key black"><div id="key_black_text">G# /A♭</div></div>
+    <div class="key">A</div>
+    <div class="key black"><div id="key_black_text">A# /B♭</div></div>
+    <div class="key">B</div>
+    <div class="key">C</div>
+    <div class="key black"><div id="key_black_text">C# /D♭</div></div>
+    <div class="key">D</div>
+    <div class="key black"><div id="key_black_text">D# /E♭</div></div>
+    <div class="key">E</div>
+    <div class="key">F</div>
+    <div class="key black"><div id="key_black_text">F# /G♭</div></div>
+    <div class="key">G</div>
+    <div class="key black"><div id="key_black_text">G# /A♭</div></div>
+    <div class="key">A</div>
+    <div class="key black"><div id="key_black_text">A# /B♭</div></div>
+    <div class="key">B</div>
+  </div>
+
+  <script>
+    // JSON data with musical scales
+    const jsonData = {
+      "C": {
+          "ionian": ["C", "D", "E", "F", "G", "A", "B", "C"],
+          "dorian": ["C", "D", "D#", "F", "G", "A", "A#", "C"],
+          "phrygian": ["C", "C#", "D#", "F", "G", "G#", "A#", "C"],
+          "lydian": ["C", "D", "E", "F#", "G", "A", "B", "C"],
+          "mixolydian": ["C", "D", "E", "F", "G", "A", "A#", "C"],
+          "aeolian": ["C", "D", "D#", "F", "G", "G#", "A#", "C"],
+          "locrian": ["C", "C#", "D#", "F", "F#", "G#", "A#", "C"]
+      },
+      "C#": {
+          "ionian": ["C#", "D#", "F", "F#", "G#", "A#", "C", "C#"],
+          "dorian": ["C#", "D#", "E", "F#", "G#", "A#", "B", "C#"],
+          "phrygian": ["C#", "D", "E", "F#", "G#", "A", "B", "C#"],
+          "lydian": ["C#", "D#", "F", "G", "G#", "A#", "C", "C#"],
+          "mixolydian": ["C#", "D#", "F", "F#", "G#", "A#", "B", "C#"],
+          "aeolian": ["C#", "D#", "E", "F#", "G#", "A", "B", "C#"],
+          "locrian": ["C#", "D", "E", "F#", "G", "A", "B", "C#"]
+      },
+      "D": {
+          "ionian": ["D", "E", "F#", "G", "A", "B", "C#", "D"],
+          "dorian": ["D", "E", "F", "G", "A", "B", "C", "D"],
+          "phrygian": ["D", "D#", "F", "G", "A", "A#", "C", "D"],
+          "lydian": ["D", "E", "F#", "G#", "A", "B", "C#", "D"],
+          "mixolydian": ["D", "E", "F#", "G", "A", "B", "C", "D"],
+          "aeolian": ["D", "E", "F", "G", "A", "A#", "C", "D"],
+          "locrian": ["D", "D#", "F", "G", "G#", "A#", "C", "D"]
+      },
+      "D#": {
+          "ionian": ["D#", "F", "G", "G#", "A#", "C", "D", "D#"],
+          "dorian": ["D#", "F", "F#", "G#", "A#", "C", "C#", "D#"],
+          "phrygian": ["D#", "E", "F#", "G#", "A#", "B", "C#", "D#"],
+          "lydian": ["D#", "F", "G", "A", "A#", "C", "D", "D#"],
+          "mixolydian": ["D#", "F", "G", "G#", "A#", "C", "C#", "D#"],
+          "aeolian": ["D#", "F", "F#", "G#", "A#", "B", "C#", "D#"],
+          "locrian": ["D#", "E", "F#", "G#", "A", "B", "C#", "D#"]
+      },
+      "E": {
+          "ionian": ["E", "F#", "G#", "A", "B", "C#", "D#", "E"],
+          "dorian": ["E", "F#", "G", "A", "B", "C#", "D", "E"],
+          "phrygian": ["E", "F", "G", "A", "B", "C", "D", "E"],
+          "lydian": ["E", "F#", "G#", "A#", "B", "C#", "D#", "E"],
+          "mixolydian": ["E", "F#", "G#", "A", "B", "C#", "D", "E"],
+          "aeolian": ["E", "F#", "G", "A", "B", "C", "D", "E"],
+          "locrian": ["E", "F", "G", "A", "A#", "C", "D", "E"]
+      },
+      "F": {
+          "ionian": ["F", "G", "A", "A#", "C", "D", "E", "F"],
+          "dorian": ["F", "G", "G#", "A#", "C", "D", "D#", "F"],
+          "phrygian": ["F", "F#", "G#", "A#", "C", "C#", "D#", "F"],
+          "lydian": ["F", "G", "A", "B", "C", "D", "E", "F"],
+          "mixolydian": ["F", "G", "A", "A#", "C", "D", "D#", "F"],
+          "aeolian": ["F", "G", "G#", "A#", "C", "C#", "D#", "F"],
+          "locrian": ["F", "F#", "G#", "A#", "B", "C#", "D#", "F"]
+      },
+      "F#": {
+          "ionian": ["F#", "G#", "A#", "B", "C#", "D#", "F", "F#"],
+          "dorian": ["F#", "G#", "A", "B", "C#", "D#", "E", "F#"],
+          "phrygian": ["F#", "G", "A", "B", "C#", "D", "E", "F#"],
+          "lydian": ["F#", "G#", "A#", "C", "C#", "D#", "F", "F#"],
+          "mixolydian": ["F#", "G#", "A#", "B", "C#", "D#", "E", "F#"],
+          "aeolian": ["F#", "G#", "A", "B", "C#", "D", "E", "F#"],
+          "locrian": ["F#", "G", "A", "B", "C", "D", "E", "F#"]
+      },
+      "G": {
+          "ionian": ["G", "A", "B", "C", "D", "E", "F#", "G"],
+          "dorian": ["G", "A", "A#", "C", "D", "E", "F", "G"],
+          "phrygian": ["G", "G#", "A#", "C", "D", "D#", "F", "G"],
+          "lydian": ["G", "A", "B", "C#", "D", "E", "F#", "G"],
+          "mixolydian": ["G", "A", "B", "C", "D", "E", "F", "G"],
+          "aeolian": ["G", "A", "A#", "C", "D", "D#", "F", "G"],
+          "locrian": ["G", "G#", "A#", "C", "C#", "D#", "F", "G"]
+      },
+      "G#": {
+          "ionian": ["G#", "A#", "C", "C#", "D#", "F", "G", "G#"],
+          "dorian": ["G#", "A#", "B", "C#", "D#", "F", "F#", "G#"],
+          "phrygian": ["G#", "A", "B", "C#", "D#", "E", "F#", "G#"],
+          "lydian": ["G#", "A#", "C", "D", "D#", "F", "G", "G#"],
+          "mixolydian": ["G#", "A#", "C", "C#", "D#", "F", "F#", "G#"],
+          "aeolian": ["G#", "A#", "B", "C#", "D#", "E", "F#", "G#"],
+          "locrian": ["G#", "A", "B", "C#", "D", "E", "F#", "G#"]
+      },
+      "A": {
+          "ionian": ["A", "B", "C#", "D", "E", "F#", "G#", "A"],
+          "dorian": ["A", "B", "C", "D", "E", "F#", "G", "A"],
+          "phrygian": ["A", "A#", "C", "D", "E", "F", "G", "A"],
+          "lydian": ["A", "B", "C#", "D#", "E", "F#", "G#", "A"],
+          "mixolydian": ["A", "B", "C#", "D", "E", "F#", "G", "A"],
+          "aeolian": ["A", "B", "C", "D", "E", "F", "G", "A"],
+          "locrian": ["A", "A#", "C", "D", "D#", "F", "G", "A"]
+      },
+      "A#": {
+          "ionian": ["A#", "C", "D", "D#", "F", "G", "A", "A#"],
+          "dorian": ["A#", "C", "C#", "D#", "F", "G", "G#", "A#"],
+          "phrygian": ["A#", "B", "C#", "D#", "F", "F#", "G#", "A#"],
+          "lydian": ["A#", "C", "D", "E", "F", "G", "A", "A#"],
+          "mixolydian": ["A#", "C", "D", "D#", "F", "G", "G#", "A#"],
+          "aeolian": ["A#", "C", "C#", "D#", "F", "F#", "G#", "A#"],
+          "locrian": ["A#", "B", "C#", "D#", "E", "F#", "G#", "A#"]
+      },
+      "B": {
+          "ionian": ["B", "C#", "D#", "E", "F#", "G#", "A#", "B"],
+          "dorian": ["B", "C#", "D", "E", "F#", "G#", "A", "B"],
+          "phrygian": ["B", "C", "D", "E", "F#", "G", "A", "B"],
+          "lydian": ["B", "C#", "D#", "F", "F#", "G#", "A#", "B"],
+          "mixolydian": ["B", "C#", "D#", "E", "F#", "G#", "A", "B"],
+          "aeolian": ["B", "C#", "D", "E", "F#", "G", "A", "B"],
+          "locrian": ["B", "C", "D", "E", "F", "G", "A", "B"]
+      }
+    };
+
+    // Prepare arrays for keys and modes
+    const keys = Object.keys(jsonData);
+    const modes = ["ionian", "dorian", "phrygian", "lydian", "mixolydian", "aeolian", "locrian"];
+
+    // Current selections
+    let currentKeyIndex = 0;
+    let currentModeIndex = 0;
+
+    // Wheel item height (px)
+    const itemHeight = 50;
+
+    // Populate wheel lists
+    function populateWheel(type, items, listElementId) {
+      const listElement = document.getElementById(listElementId);
+      listElement.innerHTML = "";
+      // To create a looping effect, repeat items several times.
+      const repetitions = 24;
+      for (let r = 0; r < repetitions; r++) {
+        items.forEach(item => {
+          const div = document.createElement("div");
+          div.classList.add("wheel-item");
+          // Capitalize first letter for mode names.
+          div.textContent = type === "mode" ? item.charAt(0).toUpperCase() + item.slice(1) : item;
+          listElement.appendChild(div);
+        });
+      }
+      // Set initial position (middle repetition)
+      if(type === "key"){
+        currentKeyIndex += (keys.length * repetitions) / 2; // start in the middle of the repeated list
+        listElement.style.transform = `translateY(-${currentKeyIndex * itemHeight}px)`;
+      } else if(type === "mode"){
+        currentModeIndex += (modes.length * repetitions) / 2;
+        listElement.style.transform = `translateY(-${currentModeIndex * itemHeight}px)`;
+      }
+    }
+
+    // Update display based on selections and update piano key highlights
+    function updateDisplay() {
+      const selectedKey = keys[Math.abs(currentKeyIndex) % keys.length];
+      const selectedMode = modes[Math.abs(currentModeIndex) % modes.length];
+      const scaleNotes = jsonData[selectedKey][selectedMode];
+      document.getElementById("scale-notes").textContent = scaleNotes.join(" - ");
+      updateKeyboardHighlights(scaleNotes);
+    }
+
+    // Iterate over the piano keys and add a "highlight" class if its note is in scaleNotes.
+    function updateKeyboardHighlights(scaleNotes) {
+      // Remove highlight from all keys first.
+      document.querySelectorAll('.keyboard .key').forEach(key => {
+        key.classList.remove("highlight");
+      });
+      // Check each key.
+      document.querySelectorAll('.keyboard .key').forEach(key => {
+        // Get text from the key. For black keys, they might contain a "/" so split them.
+        let text = key.textContent.trim();
+        // Split on slash and trim
+        let tokens = text.split("/").map(token => token.trim());
+        // Check if any token exactly matches one of the scaleNotes.
+        if (tokens.some(token => scaleNotes.includes(token))) {
+          key.classList.add("highlight");
+        }
+      });
+    }
+
+    // Move wheel function
+    function moveWheel(type, delta) {
+      if (type === "key") {
+        currentKeyIndex += delta;
+        document.getElementById("key-list").style.transform = `translateY(-${currentKeyIndex * itemHeight}px)`;
+      } else if (type === "mode") {
+        currentModeIndex += delta;
+        document.getElementById("mode-list").style.transform = `translateY(-${currentModeIndex * itemHeight}px)`;
+      }
+      updateDisplay();
+    }
+
+    // Initialize wheels and display on load
+    window.onload = function() {
+      populateWheel("key", keys, "key-list");
+      populateWheel("mode", modes, "mode-list");
+      updateDisplay();
+    };
+  </script>
+</body>
+</html>
