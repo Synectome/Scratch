@@ -72,11 +72,21 @@ function draw() {
         stroke(2);
         strokeWeight(2);
     }
-    console.log(centroids);
+    // console.log(centroids);
 
+    let mouse = createVector(mouseX, mouseY);
     for (let i = 0; i < seedPoints.length; i++) {
-        seedPoints[i].lerp(centroids[i], 0.01);
+        mouse = createVector(mouseX, mouseY)
+        if (abs(seedPoints[i].x - mouseX < 40) && abs(seedPoints[i].y - mouseY < 40)){
+            let dir = p5.Vector.sub(seedPoints[i], mouse);
+            console.log(dir);
+            seedPoints[i].lerp(mouse, 0.005);
+        } else {
+            seedPoints[i].lerp(centroids[i], 0.01);
+        }
     }
+
+
 
     delaunay = calculateDelaunay(seedPoints);
     voronoi = delaunay.voronoi([0, 0, width, height]);
