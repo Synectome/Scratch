@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Chopped Div Example</title>
+  <style>
+    .chopped-div {
+      width: 300px;
+      height: 200px;
+      background-color: #61dafb;
+      /* This clip-path chops off a circular curve from the top-left corner.
+         Explanation of the path commands:
+         M 30 0       -> Move to (30, 0), leaving a gap of 30px for the arc.
+         H 100%       -> Draw a horizontal line to the right edge.
+         V 100%       -> Draw a vertical line to the bottom edge.
+         H 0          -> Draw a horizontal line to the left edge.
+         V 30         -> Draw a vertical line down to (0, 30).
+         A 30 30 0 0 1 30 0 -> Draw an arc with radii 30 from (0,30) to (30,0).
+         Z            -> Close the path. */
+      clip-path: path('M 30 0 H 100% V 100% H 0 V 30 A 30 30 0 0 1 30 0 Z');
+    }
+  </style>
+</head>
+<body>
+  <div class="chopped-div"></div>
+</body>
+</html>

@@ -66,6 +66,55 @@
       border-radius: 8px;
       display: inline-block;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      margin-bottom: 40px;
+    }
+    /* Piano Keyboard Styles */
+    .keyboard {
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      margin: 10px;
+    }
+    .key {
+      width: 60px;
+      height: 200px;
+      border: 1px solid #000;
+      background: white;
+      text-align: center;
+      line-height: 340px;
+      font-weight: bold;
+      color: black;
+      box-shadow: 2px 2px 5px rgba(0,0,0,0.3);
+      box-sizing: border-box;
+      cursor: pointer;
+      transition: transform 0.2s;
+      border-bottom-right-radius: 5px;
+      border-bottom-left-radius: 5px;
+      position: relative;
+    }
+    .key:active {
+      transform: scale(0.95);
+    }
+    .key.black {
+      width: 40px;
+      height: 130px;
+      background: black;
+      color: white;
+      margin-left: -20px;
+      margin-right: -20px;
+      z-index: 1;
+      line-height: 20px;
+    }
+    #key_black_text {
+      margin-top: 80px;
+    }
+    /* Red glow animation for highlighted keys */
+    @keyframes redGlow {
+      from { box-shadow: none; }
+      to { background:red; }
+    }
+    .highlight {
+      animation: redGlow 0.5s forwards;
     }
   </style>
 </head>
@@ -96,6 +145,35 @@
   <div id="scale-display">
     <h2>Selected Scale:</h2>
     <p id="scale-notes"></p>
+  </div>
+  <div class="keyboard">
+    <style>
+      /* Inline keyboard style block (if needed, otherwise can be merged) */
+    </style>
+    <div class="key">C</div>
+    <div class="key black"><div id="key_black_text">C# /D♭</div></div>
+    <div class="key">D</div>
+    <div class="key black"><div id="key_black_text">D# /E♭</div></div>
+    <div class="key">E</div>
+    <div class="key">F</div>
+    <div class="key black"><div id="key_black_text">F# /G♭</div></div>
+    <div class="key">G</div>
+    <div class="key black"><div id="key_black_text">G# /A♭</div></div>
+    <div class="key">A</div>
+    <div class="key black"><div id="key_black_text">A# /B♭</div></div>
+    <div class="key">B</div>
+    <div class="key">C</div>
+    <div class="key black"><div id="key_black_text">C# /D♭</div></div>
+    <div class="key">D</div>
+    <div class="key black"><div id="key_black_text">D# /E♭</div></div>
+    <div class="key">E</div>
+    <div class="key">F</div>
+    <div class="key black"><div id="key_black_text">F# /G♭</div></div>
+    <div class="key">G</div>
+    <div class="key black"><div id="key_black_text">G# /A♭</div></div>
+    <div class="key">A</div>
+    <div class="key black"><div id="key_black_text">A# /B♭</div></div>
+    <div class="key">B</div>
   </div>
 
   <script>
@@ -239,38 +317,49 @@
       }
       // Set initial position (middle repetition)
       if(type === "key"){
-        currentKeyIndex += (keys.length * repetitions)/2; // start in the middle of the repeated list
+        currentKeyIndex += (keys.length * repetitions) / 2; // start in the middle of the repeated list
         listElement.style.transform = `translateY(-${currentKeyIndex * itemHeight}px)`;
       } else if(type === "mode"){
-        currentModeIndex += (modes.length * repetitions)/2;
+        currentModeIndex += (modes.length * repetitions) / 2;
         listElement.style.transform = `translateY(-${currentModeIndex * itemHeight}px)`;
       }
     }
 
-    // Update display based on selections
+    // Update display based on selections and update piano key highlights
     function updateDisplay() {
-    //   const selectedKey = keys[currentKeyIndex % keys.length];
-    //   const selectedMode = modes[currentModeIndex % modes.length];
-      const selectedKey = keys[Math.abs(currentKeyIndex % 12)];
-      const selectedMode = modes[Math.abs(currentModeIndex % 7)];
-      console.log(Math.abs(currentKeyIndex % 12));
-      console.log(selectedKey);
-      console.log(Math.abs(currentModeIndex % 7));
-      console.log(selectedMode);
-      console.log("-------------");
+      const selectedKey = keys[Math.abs(currentKeyIndex) % keys.length];
+      const selectedMode = modes[Math.abs(currentModeIndex) % modes.length];
       const scaleNotes = jsonData[selectedKey][selectedMode];
       document.getElementById("scale-notes").textContent = scaleNotes.join(" - ");
+      updateKeyboardHighlights(scaleNotes);
+    }
+
+    // Iterate over the piano keys and add a "highlight" class if its note is in scaleNotes.
+    function updateKeyboardHighlights(scaleNotes) {
+      // Remove highlight from all keys first.
+      document.querySelectorAll('.keyboard .key').forEach(key => {
+        key.classList.remove("highlight");
+      });
+      // Check each key.
+      document.querySelectorAll('.keyboard .key').forEach(key => {
+        // Get text from the key. For black keys, they might contain a "/" so split them.
+        let text = key.textContent.trim();
+        // Split on slash and trim
+        let tokens = text.split("/").map(token => token.trim());
+        // Check if any token exactly matches one of the scaleNotes.
+        if (tokens.some(token => scaleNotes.includes(token))) {
+          key.classList.add("highlight");
+        }
+      });
     }
 
     // Move wheel function
     function moveWheel(type, delta) {
       if (type === "key") {
         currentKeyIndex += delta;
-        // currentKeyIndex %= 12;
         document.getElementById("key-list").style.transform = `translateY(-${currentKeyIndex * itemHeight}px)`;
       } else if (type === "mode") {
         currentModeIndex += delta;
-        // currentKeyIndex %= 7;
         document.getElementById("mode-list").style.transform = `translateY(-${currentModeIndex * itemHeight}px)`;
       }
       updateDisplay();
