@@ -2,6 +2,9 @@ console// Coding Train / Daniel Shiffman
 // Weighted Voronoi Stippling
 // https://thecodingtrain.com/challenges/181-image-stippling
 
+const POINT_SPEED = 0.9; // between 0-1
+const DENSITY_THRESH = 15; // pixels
+
 // All of the points
 let points = [];
 // Global variables for geometry
@@ -38,6 +41,13 @@ function draw() {
 
 // Generate random points avoiding bright areas
 function generateRandomPoints(n) {
+  // this generates the points randomly
+  // for (let i = 0; i < n; i++) {
+  //   let x = random(width);
+  //   let y = random(height);
+  //   points.push(createVector(x, y));
+  // }
+  // this generates the points in approximation of the photo off the bat
   for (let i = 0; i < n; i++) {
     let x = random(width);
     let y = random(height);
@@ -101,7 +111,7 @@ function updatePoints() {
   
   // Interpolate points
   for (let i = 0; i < points.length; i++) {
-    points[i].lerp(centroids[i], 0.1);
+    points[i].lerp(centroids[i], POINT_SPEED);
   }
   
   // Next voronoi (relaxation)
@@ -112,18 +122,24 @@ function updatePoints() {
 }
 
 function drawTriangles(delaunay){
+  // only draw triangles if density is over a threshold
   noFill();
   strokeWeight(1);
   let {points, triangles} = delaunay;
   for (let i = 0; i < triangles.length; i += 3) {
-      let a = 2 * delaunay.triangles[i];
-      let b = 2 * delaunay.triangles[i+1];
-      let c = 2 * delaunay.triangles[i+2];
+    console.log('+===============+');
+    
+    let a = 2 * delaunay.triangles[i];
+    let b = 2 * delaunay.triangles[i+1];
+    let c = 2 * delaunay.triangles[i+2];
+    console.log(`abs diff = ${abs(points[a]-points[b]) + abs(points[b]-points[c]) + abs(points[c]-points[a])}`)
+    if (abs(points[a]-points[b]) + abs(points[b]-points[c]) + abs(points[c]-points[a]) < DENSITY_THRESH){
       triangle(
           points[a], points[a+1],
           points[b], points[b+1],
           points[c], points[c+1]
       )
+    }
   }
 }
 
