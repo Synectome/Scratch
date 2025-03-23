@@ -4,9 +4,12 @@
 // originally - just a moving circle that changed dots colours
 let dots = [];
 let circle;
+const SPEEDLIMIT = 7;
+const BOUNDX = 600;
+const BOUNDY = 400;
 
 function setup() {
-  createCanvas(600, 400);
+  createCanvas(BOUNDX, BOUNDY);
   
   // Generate random dots
   for (let i = 0; i < 50; i++) {
@@ -66,29 +69,98 @@ class BouncingCircle {
   update() {
     this.pos.add(this.vel);
 
-    // Bounce off mouse
-    let mouse_speed = dist(mouseX, mouseY, pmouseX, pmouseY)*0.1;
-    console.log(mouse_speed);
-    // need to cap the max speed of mouse
-    let left = this.pos.x - this.radius < mouseX && mouseX < this.pos.x;
-    let right = this.pos.x + this.radius > mouseX && mouseX > this.pos.x;
-    let top = this.pos.y + this.radius > mouseY && ;
-    let bottom = this.pos.y - this.radius < mouseY;
-    if (this.pos.x - this.radius < mouseX && this.pos.x + this.radius > mouseX &&
-      this.pos.y - this.radius < mouseY && this.pos.y + this.radius > mouseY){
-        // need to cap the max speed of mouse
+    // Mouse speed limits
+    let mouse_speed = dist(mouseX, mouseY, pmouseX, pmouseY);
+    if (mouse_speed > SPEEDLIMIT){
+      mouse_speed = SPEEDLIMIT;
+    } else if (mouse_speed < -SPEEDLIMIT){
+      mouse_speed = -SPEEDLIMIT;
+    }
+
+    // Old square style interesection of quadrands
+    // let left = this.pos.x - this.radius < mouseX && mouseX < this.pos.x;
+    // let right = this.pos.x + this.radius > mouseX && mouseX > this.pos.x;
+    // let top = this.pos.y + this.radius > mouseY && mouseY > this.pos.y;
+    // let bottom = this.pos.y - this.radius < mouseY && mouseY < this.pos.y;
+    // if (top && left){
+    //   this.vel.x += mouse_speed;
+    //   this.vel.y -= mouse_speed;
+    // } else if (top && right) {
+    //   this.vel.x -= mouse_speed;
+    //   this.vel.y += mouse_speed;
+    // } else if (bottom && left) {
+    //   this.vel.x += mouse_speed;
+    //   this.vel.y += mouse_speed;
+    // } else if (bottom && right) {
+    //   this.vel.x -= mouse_speed;
+    //   this.vel.y -= mouse_speed;
+    // }
+
+    // ### new circular quadrant intersections
+    // Calculate relative mouse position to the circle center
+    let relX = mouseX - this.pos.x;
+    let relY = mouseY - this.pos.y;
+
+    // Check if the mouse is inside the circle
+    let d = dist(mouseX, mouseY, this.pos.x, this.pos.y);
+
+    if (d < this.radius) { // Mouse is inside the circle
+      if (relX >= 0 && relY < 0) { 
+        // view bottom left - direction incorrect
+        console.log('top right\nthis.vel.x += mouse_speed;\nthis.vel.y -= mouse_speed;');
+        this.vel.x -= mouse_speed;
+        this.vel.y += mouse_speed;
+      } else if (relX < 0 && relY < 0) { 
+        console.log('top left \nthis.vel.x += mouse_speed;\nthis.vel.y += mouse_speed;');
         this.vel.x += mouse_speed;
         this.vel.y += mouse_speed;
+      } else if (relX < 0 && relY >= 0) { 
+        // top left direction must be okay...
+        console.log('bottom left \nthis.vel.x -= mouse_speed;\nthis.vel.y -= mouse_speed;');
+        this.vel.x += mouse_speed;
+        this.vel.y -= mouse_speed;
+      } else { 
+        // view bottom right - direction seems okay
+        console.log('bottom right \nthis.vel.x -= mouse_speed;\nthis.vel.y -= mouse_speed;');
+        this.vel.x -= mouse_speed;
+        this.vel.y -= mouse_speed;
+      }
+    }
+
+
+    // enforcing speed limits
+    if (this.vel.y > SPEEDLIMIT){
+      this.vel.y = SPEEDLIMIT;
+    } else if (this.vel.y < -SPEEDLIMIT){
+      this.vel.y = -SPEEDLIMIT;
+    }
+    if (this.vel.x > SPEEDLIMIT){
+      this.vel.x = SPEEDLIMIT;
+    } else if (this.vel.y < -SPEEDLIMIT){
+      this.vel.x = -SPEEDLIMIT;
     }
 
     // Bounce off walls
-    if (this.pos.x - this.radius < 0 || this.pos.x + this.radius > width) {
-      this.vel.x *= -1;
+    if (this.pos.x - this.radius < 0) {
+      this.vel.x *= -0.9;
+      this.pos.x = 1 + this.radius;
+    } else if (this.pos.x + this.radius > width){
+      this.vel.x *= -0.9;
+      this.pos.x = BOUNDX - 1 - this.radius;
     }
-    if (this.pos.y - this.radius < 0 || this.pos.y + this.radius > height) {
-      this.vel.y *= -1;
+    if (this.pos.y - this.radius < 0) {
+      this.vel.y *= -0.9;
+      this.pos.y = 1 + this.radius;
+    } else if (this.pos.y + this.radius > height){
+      this.vel.y *= -0.9;
+      this.pos.y = BOUNDY - 1 - this.radius;
     }
+
+    // faux gravity
     this.vel.y += 0.1;
+
+
+
   }
 
   display() {
