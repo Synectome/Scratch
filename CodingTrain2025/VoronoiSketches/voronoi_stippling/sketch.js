@@ -1,4 +1,4 @@
-// Coding Train / Daniel Shiffman
+console// Coding Train / Daniel Shiffman
 // Weighted Voronoi Stippling
 // https://thecodingtrain.com/challenges/181-image-stippling
 
@@ -7,22 +7,23 @@ let points = [];
 // Global variables for geometry
 let delaunay, voronoi;
 // Image
-let gloria;
+let photo_file;
 
 // Load image before setup
 function preload() {
-  gloria = loadImage("jesse.jpg");
+  photo_file = loadImage("/jesse2.jpg");
 }
 
 function setup() {
-  createCanvas(600, 532);
+  createCanvas(1200, 1064);
 
   // Generate random points avoiding bright areas
-  generateRandomPoints(6000);
+  generateRandomPoints(8000);
 
   // Calculate Delaunay triangulation and Voronoi diagram
   delaunay = calculateDelaunay(points);
   voronoi = delaunay.voronoi([0, 0, width, height]);
+  // noLoop()
 }
 
 function draw() {
@@ -40,7 +41,7 @@ function generateRandomPoints(n) {
   for (let i = 0; i < n; i++) {
     let x = random(width);
     let y = random(height);
-    let col = gloria.get(x, y);
+    let col = photo_file.get(x, y);
     if (random(100) > brightness(col)) {
       points.push(createVector(x, y));
     } else {
@@ -72,14 +73,14 @@ function updatePoints() {
   }
   
   // Get the weights of all the pixels and assign to cells
-  gloria.loadPixels();
+  photo_file.loadPixels();
   let delaunayIndex = 0;
   for (let i = 0; i < width; i++) {
     for (let j = 0; j < height; j++) {
       let index = (i + j * width) * 4;
-      let r = gloria.pixels[index + 0];
-      let g = gloria.pixels[index + 1];
-      let b = gloria.pixels[index + 2];
+      let r = photo_file.pixels[index + 0];
+      let g = photo_file.pixels[index + 1];
+      let b = photo_file.pixels[index + 2];
       let bright = (r + g + b) / 3;
       let weight = 1 - bright / 255;
       delaunayIndex = delaunay.find(i, j, delaunayIndex);
@@ -105,7 +106,25 @@ function updatePoints() {
   
   // Next voronoi (relaxation)
   delaunay = calculateDelaunay(points);
+  // draw delaunay triangle
+  drawTriangles(delaunay);
   voronoi = delaunay.voronoi([0, 0, width, height]);
+}
+
+function drawTriangles(delaunay){
+  noFill();
+  strokeWeight(1);
+  let {points, triangles} = delaunay;
+  for (let i = 0; i < triangles.length; i += 3) {
+      let a = 2 * delaunay.triangles[i];
+      let b = 2 * delaunay.triangles[i+1];
+      let c = 2 * delaunay.triangles[i+2];
+      triangle(
+          points[a], points[a+1],
+          points[b], points[b+1],
+          points[c], points[c+1]
+      )
+  }
 }
 
 // Calculate Delaunay triangulation from p5.Vectors
