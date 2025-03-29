@@ -3,7 +3,7 @@ console// Coding Train / Daniel Shiffman
 // https://thecodingtrain.com/challenges/181-image-stippling
 
 const POINT_SPEED = 0.9; // between 0-1
-const DENSITY_THRESH = 15; // pixels
+const DENSITY_THRESH = 100; // pixels
 
 // All of the points
 let points = [];
