@@ -1,4 +1,4 @@
-// cube extrusion, March 29th 2025
+// making cubes from 6 planes, March 29th 2025
 // Jesse Bourret-Gheysen
 
 const CANVASX = 600;
@@ -16,15 +16,17 @@ function draw() {
   orbitControl(); // Enables mouse-controlled orbiting
   rotateY(frameCount * 0.005); // Slow rotation for effect
 
-  for (let cube of cubes) {
+  for (let point of points) {
     push();
     fill(cube.color);
     translate(cube.x, cube.y, cube.z);
-    extrusion(10+cos(frameCount/100));
-    box(cube.size);
+    // box(cube.size);
+    draw_cube(cube);
     pop();
   }
 }
+
+
 
 function extrusion(value){
   applyMatrix(1, value/100, 0, 0,   // X-axis skew
@@ -69,14 +71,28 @@ function mousePressed(){
 }
 
 function generateCubes(numCubes, sizeRange, colors) {
-  
   for (let i = 0; i < numCubes; i++) {
     let size = random(sizeRange[0], sizeRange[1]);
     let x = random(-200, 200);
     let y = random(-200, 200);
     let z = random(-200, 200);
     let color = random(colors);
-    
-    cubes.push({ x, y, z, size, color });
+    let planes = [];
+    cubes.push({ x, y, z, size, color, planes});
   }
+}
+
+function draw_cube(cube){
+  // this will draw a cube using 6 planes
+
+  // for each of the 6 planes, get the plane centers
+  yp = (cube.x, cube.y+(cube.size/2), cube.z);
+  ym = (cube.x, cube.y+(cube.size/2), cube.z);
+  xp = (cube.x+(cube.size/2), cube.y, cube.z);
+  xm = (cube.x-(cube.size/2), cube.y, cube.z);
+  zp = (cube.x, cube.y, cube.z+(cube.size/2));
+  zm = (cube.x, cube.y, cube.z-(cube.size/2));
+  
+  //pythagorean theorum for corner dist from plane center
+  let corner_dist = sqrt(2*((cube.size/4)^2))
 }
