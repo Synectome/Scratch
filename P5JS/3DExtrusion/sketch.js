@@ -21,7 +21,7 @@ function draw() {
     fill(cube.color);
     translate(cube.x, cube.y, cube.z);
     // box(cube.size);
-    draw_cube(cube);
+    calculate_cube_points(cube);
     pop();
   }
   // noLoop();
@@ -73,7 +73,7 @@ function mousePressed(){
 
 function generateCubes(numCubes, sizeRange, colors) {
   for (let i = 0; i < numCubes; i++) {
-    let size = 50; //random(sizeRange[0], sizeRange[1]);
+    let size = 500; //random(sizeRange[0], sizeRange[1]);
     let x = 0; //random(-200, 200);
     let y = 0; //random(-200, 200);
     let z = 0; //random(-200, 200);
@@ -87,16 +87,14 @@ function generateCubes(numCubes, sizeRange, colors) {
   }
 }
 
-function vertex_draw(coord_list){
-  beginShape();
-  vertex(coord_list[0].x, coord_list[0].y, coord_list[0].z);
-  vertex(coord_list[1].x, coord_list[1].y, coord_list[1].z);
-  vertex(coord_list[2].x, coord_list[2].y, coord_list[2].z);
-  vertex(coord_list[3].x, coord_list[3].y, coord_list[3].z);
-  endShape(CLOSE);
+// Function to compute normal vector of a plane given 3 points (Gracias chatGPT, march 30th 2025)
+function getNormal(a, b, c) {
+  let v1 = p5.Vector.sub(b, a);
+  let v2 = p5.Vector.sub(c, a);
+  return p5.Vector.cross(v1, v2).normalize();
 }
 
-function draw_cube(cube){
+function calculate_cube_points(cube){
   // this will draw a cube using 6 planes
 
   // for each of the 6 planes, get the plane centers
@@ -107,7 +105,7 @@ function draw_cube(cube){
   let zp = createVector(cube.x, cube.y, cube.z+(cube.size/2));
   let zm = createVector(cube.x, cube.y, cube.z-(cube.size/2));
 
-  console.log('yp, xp, zp: ', yp, xp, zp);
+  // console.log('yp, xp, zp: ', yp, xp, zp);
   
   //pythagorean theorum for corner dist from plane center
   // yada yada, intersection of 6 orthoganal planes = 8 points
@@ -143,7 +141,7 @@ function draw_cube(cube){
     createVector(xp.x - (cube.size/4), xp.y, xp.z - cube.size/4),
     createVector(xp.x + (cube.size/4), xp.y, xp.z - cube.size/4),
   ];
-  console.log('xp_corners: ', xp_corners);
+  // console.log('xp_corners: ', xp_corners);
   // beginShape();
   // vertex(xp_corners[0]);
   // vertex(xp_corners[1]);
@@ -178,22 +176,67 @@ function draw_cube(cube){
     createVector(zm.x + (cube.size/4), zm.y, zm.z - cube.size/4),
   ];
 
-  vertex_draw(yp_corners);
-  vertex_draw(ym_corners);
+  // vertex_draw(yp_corners);
+  // vertex_draw(ym_corners);
 
-  push();
-  // translate(0,10,0);
-  // // rotateX((cos(frameCount/100)*PI) / 4);    // Rotate 45 degrees around X-axis
-  // // rotateY(PI / 4);    // Rotate 90 degrees around Y-axis
-  // rotateZ(PI/4);
-  vertex_draw(xp_corners);
+  // push();
+  // // translate(0,10,0);
+  // // // rotateX((cos(frameCount/100)*PI) / 4);    // Rotate 45 degrees around X-axis
+  // // // rotateY(PI / 4);    // Rotate 90 degrees around Y-axis
+  // // rotateZ(PI/4);
+  // vertex_draw(xp_corners);
+  // vertex_draw(xm_corners);
+  // pop();
+
+  // push();
+  // translate(0,0,0);
+  // vertex_draw(zp_corners);
+  // vertex_draw(zm_corners);
+  // pop();
+
+  // still having them face the xy plane
+  // need to compute the normal vector to the coords i'm drawing, then rotate using applyMatrix() 
+  
+
+
+  // ------------------------- HERE IS WHERE DRAWING OCCURS
+  // vertex_draw([xp, yp, zp]);
+  // vertex_draw([xm, ym, zm]);
+
   vertex_draw(xm_corners);
-  pop();
-
-  push();
-  translate(0,0,0);
-  vertex_draw(zp_corners);
+  vertex_draw(ym_corners);
   vertex_draw(zm_corners);
+
+}
+
+function vertex_draw(coord_list){
+  // old stuff---------------------------
+  // beginShape();
+  // vertex(coord_list[0].x, coord_list[0].y, coord_list[0].z);
+  // vertex(coord_list[1].x, coord_list[1].y, coord_list[1].z);
+  // vertex(coord_list[2].x, coord_list[2].y, coord_list[2].z);
+  // vertex(coord_list[3].x, coord_list[3].y, coord_list[3].z);
+  // endShape(CLOSE);
+  console.log("coordlist = ", coord_list);
+
+  // provide 3 points from coord list to calc normal
+  let normal = getNormal(coord_list[0], coord_list[1], coord_list[2]);
+  // Compute basis vectors
+  let xAxis = p5.Vector.sub(coord_list[0], coord_list[1]).normalize();
+  let yAxis = p5.Vector.cross(normal, xAxis).normalize();
+  push();
+  applyMatrix(
+    xAxis.x, yAxis.x, normal.x, 0,
+    xAxis.y, yAxis.y, normal.y, 0,
+    xAxis.z, yAxis.z, normal.z, 0,
+    0,       0,       0,       1
+  );
+  beginShape();
+  for (let coord of coord_list){
+    console.log(`coords : ${coord.x}, ${coord.y}, ${coord.z}`);
+    vertex(coord.x, coord.y, coord.z);
+  }
+  endShape(CLOSE);
   pop();
 
 }
