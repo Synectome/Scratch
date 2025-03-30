@@ -24,7 +24,7 @@ function draw() {
     calculate_cube_points(cube);
     pop();
   }
-  noLoop();
+  // noLoop();
 }
 
 
@@ -98,12 +98,17 @@ function calculate_cube_points(cube){
   // this will draw a cube using 6 planes
 
   // for each of the 6 planes, get the plane centers
+  // checked the results (march 30, 2:12pm) correct
   let yp = createVector(cube.x, cube.y+(cube.size/2), cube.z);
   let ym = createVector(cube.x, cube.y-(cube.size/2), cube.z);
   let xp = createVector(cube.x+(cube.size/2), cube.y, cube.z);
   let xm = createVector(cube.x-(cube.size/2), cube.y, cube.z);
   let zp = createVector(cube.x, cube.y, cube.z+(cube.size/2));
   let zm = createVector(cube.x, cube.y, cube.z-(cube.size/2));
+
+  // for (let co of [xp, yp, zp, xm, ym, zm]){
+  //   console.log(`pl_center = ${co.x}, ${co.y}, ${co.z}`);
+  // }
 
   // console.log('yp, xp, zp: ', yp, xp, zp);
   
@@ -118,6 +123,7 @@ function calculate_cube_points(cube){
     createVector(yp.x - (cube.size/4), yp.y, yp.z - cube.size/4),
     createVector(yp.x + (cube.size/4), yp.y, yp.z - cube.size/4),
   ];
+  console.log("yp_corners: ", yp_corners);
 
   let ym_corners = [
     createVector(ym.x + (cube.size/4), ym.y, ym.z + cube.size/4),
@@ -158,7 +164,17 @@ function calculate_cube_points(cube){
   // vertex_draw([xp, yp, zp]);
   // vertex_draw([xm, ym, zm]);
 
+  push();
+  // translate(xm_corners[0]);
+  // rotateZ(90);
   vertex_draw(xm_corners);
+  pop();
+  
+  // push();
+  // translate(ym);
+  // rotateX(90);
+  // vertex_draw(ym_corners);
+  // pop();
   vertex_draw(ym_corners);
   vertex_draw(zm_corners);
   vertex_draw(xp_corners);
@@ -166,15 +182,15 @@ function calculate_cube_points(cube){
   vertex_draw(zp_corners);
 
   // there should be 3 common points between these planes if my math is right
-  console.log(xm_corners);
-  console.log(ym_corners);
-  console.log(zm_corners);
+  // console.log(xm_corners);
+  // console.log(yp_corners);
+  // console.log(zm_corners);
 
 }
 
 function vertex_draw(coord_list){
 
-  console.log("coordlist = ", coord_list);
+  // console.log("coordlist = ", coord_list);
 
   // provide 3 points from coord list to calc normal
   let normal = getNormal(coord_list[0], coord_list[1], coord_list[2]);
@@ -190,7 +206,7 @@ function vertex_draw(coord_list){
   );
   beginShape();
   for (let coord of coord_list){
-    console.log(`coords : ${coord.x}, ${coord.y}, ${coord.z}`);
+    // console.log(`coords : ${coord.x}, ${coord.y}, ${coord.z}`);
     vertex(coord.x, coord.y, coord.z);
   }
   endShape(CLOSE);
