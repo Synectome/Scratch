@@ -24,7 +24,7 @@ function draw() {
     calculate_cube_points(cube);
     pop();
   }
-  // noLoop();
+  noLoop();
 }
 
 
@@ -111,22 +111,13 @@ function calculate_cube_points(cube){
   // yada yada, intersection of 6 orthoganal planes = 8 points
   let corner_dist = sqrt(2*((cube.size/4)^2)) // ffffff-didnt need this, lol
 
-  // generate 4 points per center, then dedup
-  //yp's
+  // these corner calculations, are wrong...
   let yp_corners = [
     createVector(yp.x + (cube.size/4), yp.y, yp.z + cube.size/4),
     createVector(yp.x - (cube.size/4), yp.y, yp.z + cube.size/4),
     createVector(yp.x - (cube.size/4), yp.y, yp.z - cube.size/4),
     createVector(yp.x + (cube.size/4), yp.y, yp.z - cube.size/4),
   ];
-  
-  // console.log('yp_corners: ', yp_corners);
-  // beginShape();
-  // vertex(yp_corners[0].x, yp_corners[0].y, yp_corners[0].z);
-  // vertex(yp_corners[1].x, yp_corners[1].y, yp_corners[1].z);
-  // vertex(yp_corners[2].x, yp_corners[2].y, yp_corners[2].z);
-  // vertex(yp_corners[3].x, yp_corners[3].y, yp_corners[3].z);
-  // endShape(CLOSE);
 
   let ym_corners = [
     createVector(ym.x + (cube.size/4), ym.y, ym.z + cube.size/4),
@@ -141,13 +132,6 @@ function calculate_cube_points(cube){
     createVector(xp.x - (cube.size/4), xp.y, xp.z - cube.size/4),
     createVector(xp.x + (cube.size/4), xp.y, xp.z - cube.size/4),
   ];
-  // console.log('xp_corners: ', xp_corners);
-  // beginShape();
-  // vertex(xp_corners[0]);
-  // vertex(xp_corners[1]);
-  // vertex(xp_corners[2]);
-  // vertex(xp_corners[3]);
-  // endShape(CLOSE);
 
   let xm_corners = [
     createVector(xm.x + (cube.size/4), xm.y, xm.z + cube.size/4),
@@ -162,12 +146,6 @@ function calculate_cube_points(cube){
     createVector(zp.x - (cube.size/4), zp.y, zp.z - cube.size/4),
     createVector(zp.x + (cube.size/4), zp.y, zp.z - cube.size/4),
   ];
-  // beginShape();
-  // vertex(zp_corners[0]);
-  // vertex(zp_corners[1]);
-  // vertex(zp_corners[2]);
-  // vertex(zp_corners[3]);
-  // endShape(CLOSE);
 
   let zm_corners = [
     createVector(zm.x + (cube.size/4), zm.y, zm.z + cube.size/4),
@@ -176,29 +154,6 @@ function calculate_cube_points(cube){
     createVector(zm.x + (cube.size/4), zm.y, zm.z - cube.size/4),
   ];
 
-  // vertex_draw(yp_corners);
-  // vertex_draw(ym_corners);
-
-  // push();
-  // // translate(0,10,0);
-  // // // rotateX((cos(frameCount/100)*PI) / 4);    // Rotate 45 degrees around X-axis
-  // // // rotateY(PI / 4);    // Rotate 90 degrees around Y-axis
-  // // rotateZ(PI/4);
-  // vertex_draw(xp_corners);
-  // vertex_draw(xm_corners);
-  // pop();
-
-  // push();
-  // translate(0,0,0);
-  // vertex_draw(zp_corners);
-  // vertex_draw(zm_corners);
-  // pop();
-
-  // still having them face the xy plane
-  // need to compute the normal vector to the coords i'm drawing, then rotate using applyMatrix() 
-  
-
-
   // ------------------------- HERE IS WHERE DRAWING OCCURS
   // vertex_draw([xp, yp, zp]);
   // vertex_draw([xm, ym, zm]);
@@ -206,17 +161,19 @@ function calculate_cube_points(cube){
   vertex_draw(xm_corners);
   vertex_draw(ym_corners);
   vertex_draw(zm_corners);
+  vertex_draw(xp_corners);
+  vertex_draw(yp_corners);
+  vertex_draw(zp_corners);
+
+  // there should be 3 common points between these planes if my math is right
+  console.log(xm_corners);
+  console.log(ym_corners);
+  console.log(zm_corners);
 
 }
 
 function vertex_draw(coord_list){
-  // old stuff---------------------------
-  // beginShape();
-  // vertex(coord_list[0].x, coord_list[0].y, coord_list[0].z);
-  // vertex(coord_list[1].x, coord_list[1].y, coord_list[1].z);
-  // vertex(coord_list[2].x, coord_list[2].y, coord_list[2].z);
-  // vertex(coord_list[3].x, coord_list[3].y, coord_list[3].z);
-  // endShape(CLOSE);
+
   console.log("coordlist = ", coord_list);
 
   // provide 3 points from coord list to calc normal
