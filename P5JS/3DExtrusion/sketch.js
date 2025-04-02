@@ -2,32 +2,66 @@
 const CANVASX = 600;
 const CANVASY = 600;
 let cubes = [];
+let maxCubeSize = 30;
+let avgCubeSize = 50;
+let fov = Math.PI / 3;
+
+// these values store stretchers
+let a = 0;
+let d = 0;
+let ww = 0;
+let w = 0;
+let q = 0;
+let e = 0;
+
+let gradientImg;
 
 function setup() {
   createCanvas(CANVASX, CANVASY, WEBGL);
   generateCubes(50, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
+  // gradientImg = createGradient(width, height); // Generate gradient image
 }
 
 function draw() {
   orbitControl(); // Enables mouse-controlled orbiting
   rotateY(frameCount * 0.005); // Slow rotation for effect
 
-  background(220);
+  // changing colours background
+  // background(200 + sin(frameCount/30)*30, 100 + sin(frameCount/20)*30, 50 + cos(frameCount/10)*40);
+  background(30 + sin(frameCount/30)*30, 30 + sin(frameCount/30)*30, 30 + sin(frameCount/30)*30);
+  // radial gradient background
   
   // defines the center of the normal distribution as it ocillates,
   // read as the surface of a sphere from the center of the view ----> PARAMETERIZE THIS LATER
-  let ripple_peri = 100 + sin(frameCount/30)*80;
-  
+  let ripple_peri = sin(frameCount/30)*100;
+  fill(0, 100, 255, 150);
+  // noStroke();
+  // sphere(ripple_peri);
+  // stroke(255);
   
   // call gaussian dist funk for amplitude->cube size change
-  let gaussy = gaussian()
+  // let gaussy = gaussian(size, ripple_peri, 15)
 
-  
+  // a = 10 + cos(frameCount/20)*30;
+  // d = 15 + sin(frameCount/15)*35;
+  // ww = 15 + sin(frameCount/40)*50;
+  // e = 20 + cos(frameCount/10)*15;
+  adjustZoom()
+  avgCubeSize = 0;
   for (let cube of cubes){
-    // the gaussy weight is actually inverse, because when it is zero, the affect on cube size is at max
-    let gaussy_amplitude_weight_on_cube_size = dist(ripple_peri, ripple_peri, ripple_peri, cube.x, cube.y, cube.z);
-    drawCube(cube.x, cube.y, cube.z, cube.size+(cos(frameCount/10)*5));
+    avgCubeSize += cube.size;
+
+    cube.size += lerp(0, 5*tan(frameCount/15), 0.2);
+    if (abs(cube.size) > 280){
+      cube.size = random(20, 70);
+    }
+    if (abs(cube.size) > maxCubeSize){
+      maxCubeSize = abs(cube.size);
+    }
+    // console.log('cube.size', cube.size);
+    drawCube(cube.x, cube.y, cube.z, cube.size);
   }
+  avgCubeSize /= cubes.length;
   
 }
 
@@ -48,14 +82,14 @@ function drawCube(x, y, z, s) {
   
   // Define 8 corner vertices of the cube
   let v = [
-    createVector(x - halfS, y - halfS, z - halfS), // 0: Front-top-left
-    createVector(x + halfS, y - halfS, z - halfS), // 1: Front-top-right
-    createVector(x + halfS, y + halfS, z - halfS), // 2: Front-bottom-right
-    createVector(x - halfS, y + halfS, z - halfS), // 3: Front-bottom-left
-    createVector(x - halfS, y - halfS, z + halfS), // 4: Back-top-left
-    createVector(x + halfS, y - halfS, z + halfS), // 5: Back-top-right
-    createVector(x + halfS, y + halfS, z + halfS), // 6: Back-bottom-right
-    createVector(x - halfS, y + halfS, z + halfS)  // 7: Back-bottom-left
+    createVector(x - halfS + a, y - halfS + w, z - halfS + q), // 0: Front-top-left
+    createVector(x + halfS + a, y - halfS + w, z - halfS + e), // 1: Front-top-right
+    createVector(x + halfS + d, y + halfS + w, z - halfS + e), // 2: Front-bottom-right
+    createVector(x - halfS + d, y + halfS + w, z - halfS + q), // 3: Front-bottom-left
+    createVector(x - halfS + a, y - halfS + ww, z + halfS + q), // 4: Back-top-left
+    createVector(x + halfS + a, y - halfS + ww, z + halfS + e), // 5: Back-top-right
+    createVector(x + halfS + d, y + halfS + ww, z + halfS + e), // 6: Back-bottom-right
+    createVector(x - halfS + d, y + halfS + ww, z + halfS + q)  // 7: Back-bottom-left
   ];
   
   // Draw each face using 4 vertices
@@ -87,27 +121,38 @@ function gaussian(x, mean, stdDev) {
 
 function keyPressed() {
   if (key === 'a') {
-    console.log("a Pressed!");
-    extrusion(frameCount%CANVASX);
+    console.log("a Pressed! ", a);
   }else if (key === 'd') {
-    console.log("d Pressed!");
+    console.log("d Pressed! ", d);
+    d++;
   }
   if (key === 'w') {
-    console.log("w Pressed!");
+    console.log("w Pressed! ", w);
+    w++;
   }else if (key === 's') {
-    console.log("s Pressed!");
+    console.log("s Pressed! ", ww);
+    ww++
   }
   if (key === 'q') {
-    console.log("q Pressed!");
+    console.log("q Pressed! ", q);
+    q++;
   }else if (key === 'e') {
-    console.log("e Pressed!");
+    console.log("e Pressed! ", e);
+    e++;
+  }
+  if (key === 'x') {
+    console.log("x Pressed! adding cube");
+    generateCubes(1, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
+  }else if (key === 'z') {
+    console.log("z Pressed! removing cube");
+    cubes.pop();
   }
 }
 
 function mousePressed(){
   if (mouseButton === LEFT) {
     console.log("Left Click at", mouseX, mouseY);
-    extrusion(frameCount%CANVASX);
+    // extrusion(frameCount%CANVASX);
   } else if (mouseButton === RIGHT) {
     console.log("Right Click at", mouseX, mouseY);
   } else if (mouseButton === CENTER) {
@@ -116,4 +161,22 @@ function mousePressed(){
     cubes = [];
     generateCubes(50, [10, 50], ['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
   }
+}
+
+// Function to adjust zoom based on object visibility - thanks cheebeetee
+function adjustZoom() {
+  let sceneSize = avgCubeSize * 4; // Determine scene size
+  if (sceneSize < 250){
+    sceneSize = 250;
+  }
+  let idealFov = map(sceneSize, 100, 400, Math.PI / 6, Math.PI / 2, true); // Map size to reasonable FOV
+  console.log('idealFOV', idealFov);
+  console.log('sceneSize', sceneSize);
+  
+  let distance = sceneSize / (2 * tan(fov / 2)); // Adjusted camera distance
+  console.log('distance', distance);
+  // targetFov = idealFov; // Set the target fov
+  fov = lerp(fov, idealFov, 0.05);
+  console.log('fov', fov);
+  perspective(fov, CANVASX/CANVASY, 0.1, distance * 10);
 }
