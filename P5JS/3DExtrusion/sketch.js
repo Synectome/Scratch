@@ -2,7 +2,7 @@
 const CANVASX = 600;
 const CANVASY = 600;
 let cubes = [];
-let maxCubeSize = 30;
+// let maxCubeSize = 30;
 let avgCubeSize = 50;
 let fov = Math.PI / 3;
 
@@ -14,26 +14,27 @@ let w = 0;
 let q = 0;
 let e = 0;
 
-let gradientImg;
-
 function setup() {
   createCanvas(CANVASX, CANVASY, WEBGL);
   generateCubes(50, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
   // gradientImg = createGradient(width, height); // Generate gradient image
+  
 }
 
 function draw() {
   orbitControl(); // Enables mouse-controlled orbiting
-  rotateY(frameCount * 0.005); // Slow rotation for effect
+  rotateY(millis() * 0.00005); // Slow rotation for effect
+  rotateZ(-45);
+  rotateX(-45);
 
   // changing colours background
   // background(200 + sin(frameCount/30)*30, 100 + sin(frameCount/20)*30, 50 + cos(frameCount/10)*40);
-  background(30 + sin(frameCount/30)*30, 30 + sin(frameCount/30)*30, 30 + sin(frameCount/30)*30);
+  background(20 + sin(frameCount/30)*15, 20 + sin(frameCount/30)*15, 20 + sin(frameCount/30)*15);
   // radial gradient background
   
   // defines the center of the normal distribution as it ocillates,
   // read as the surface of a sphere from the center of the view ----> PARAMETERIZE THIS LATER
-  let ripple_peri = sin(frameCount/30)*100;
+  // let ripple_peri = sin(millis()/30)*100;
   fill(0, 100, 255, 150);
   // noStroke();
   // sphere(ripple_peri);
@@ -55,9 +56,7 @@ function draw() {
     if (abs(cube.size) > 280){
       cube.size = random(20, 70);
     }
-    if (abs(cube.size) > maxCubeSize){
-      maxCubeSize = abs(cube.size);
-    }
+
     // console.log('cube.size', cube.size);
     drawCube(cube.x, cube.y, cube.z, cube.size);
   }
@@ -119,27 +118,49 @@ function gaussian(x, mean, stdDev) {
   return Math.exp(exponent);
 }
 
+
 function keyPressed() {
-  if (key === 'a') {
+
+
+  if (keyIsDown(SHIFT) && key === 'A') {
     console.log("a Pressed! ", a);
+    a -= 10;
+  }else if (keyIsDown(SHIFT) && key === 'D') {
+    console.log("d Pressed! ", d);
+    d -= 10;
+  }else if (keyIsDown(SHIFT) && key === 'W') {
+    console.log("w Pressed! ", w);
+    w -= 10;
+  }else if (keyIsDown(SHIFT) && key === 'S') {
+    console.log("s Pressed! ", ww);
+    ww -= 10;
+  }else if (keyIsDown(SHIFT) && key === 'Q') {
+    console.log("q Pressed! ", q);
+    q -= 10;
+  }else if (keyIsDown(SHIFT) && key === 'E') {
+    console.log("e Pressed! ", e);
+    e -= 10;
+  }else if (key === 'a') {
+    console.log("a Pressed! ", a);
+    a += 10;
   }else if (key === 'd') {
     console.log("d Pressed! ", d);
-    d++;
-  }
-  if (key === 'w') {
+    d += 10;
+  }else if (key === 'w') {
     console.log("w Pressed! ", w);
-    w++;
+    w += 10;
   }else if (key === 's') {
     console.log("s Pressed! ", ww);
-    ww++
-  }
-  if (key === 'q') {
+    ww += 10;
+  }else if (key === 'q') {
     console.log("q Pressed! ", q);
-    q++;
+    q += 10;
   }else if (key === 'e') {
     console.log("e Pressed! ", e);
-    e++;
+    e += 10;
   }
+  
+  
   if (key === 'x') {
     console.log("x Pressed! adding cube");
     generateCubes(1, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
@@ -170,13 +191,13 @@ function adjustZoom() {
     sceneSize = 250;
   }
   let idealFov = map(sceneSize, 100, 400, Math.PI / 6, Math.PI / 2, true); // Map size to reasonable FOV
-  console.log('idealFOV', idealFov);
-  console.log('sceneSize', sceneSize);
+  // console.log('idealFOV', idealFov);
+  // console.log('sceneSize', sceneSize);
   
   let distance = sceneSize / (2 * tan(fov / 2)); // Adjusted camera distance
-  console.log('distance', distance);
+  // console.log('distance', distance);
   // targetFov = idealFov; // Set the target fov
   fov = lerp(fov, idealFov, 0.05);
-  console.log('fov', fov);
+  // console.log('fov', fov);
   perspective(fov, CANVASX/CANVASY, 0.1, distance * 10);
 }
