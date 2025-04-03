@@ -14,7 +14,8 @@ let q = 0;
 let e = 0;
 
 function setup() {
-  createCanvas(CANVASX, CANVASY, WEBGL);
+  let canvas = createCanvas(CANVASX, CANVASY, WEBGL);
+  canvas.parent("beating-cubes-sketch");
   generateCubes(50, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
 }
 
