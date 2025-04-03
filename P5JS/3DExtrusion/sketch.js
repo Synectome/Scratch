@@ -1,12 +1,11 @@
-// cube generation by faces - chabetee base code
+// Jesse Bourret-Gheysen, finished April 4th 2025
 const CANVASX = 600;
 const CANVASY = 600;
 let cubes = [];
-// let maxCubeSize = 30;
 let avgCubeSize = 50;
 let fov = Math.PI / 3;
 
-// these values store stretchers
+// these values store scalar modifiers of each cube corner vertex
 let a = 0;
 let d = 0;
 let ww = 0;
@@ -17,8 +16,6 @@ let e = 0;
 function setup() {
   createCanvas(CANVASX, CANVASY, WEBGL);
   generateCubes(50, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
-  // gradientImg = createGradient(width, height); // Generate gradient image
-  
 }
 
 function draw() {
@@ -26,28 +23,12 @@ function draw() {
   rotateY(millis() * 0.00005); // Slow rotation for effect
   rotateZ(-45);
   rotateX(-45);
+  adjustZoom()
 
   // changing colours background
   // background(200 + sin(frameCount/30)*30, 100 + sin(frameCount/20)*30, 50 + cos(frameCount/10)*40);
-  background(20 + sin(frameCount/30)*15, 20 + sin(frameCount/30)*15, 20 + sin(frameCount/30)*15);
-  // radial gradient background
-  
-  // defines the center of the normal distribution as it ocillates,
-  // read as the surface of a sphere from the center of the view ----> PARAMETERIZE THIS LATER
-  // let ripple_peri = sin(millis()/30)*100;
-  fill(0, 100, 255, 150);
-  // noStroke();
-  // sphere(ripple_peri);
-  // stroke(255);
-  
-  // call gaussian dist funk for amplitude->cube size change
-  // let gaussy = gaussian(size, ripple_peri, 15)
+  background(20, 20, 20);
 
-  // a = 10 + cos(frameCount/20)*30;
-  // d = 15 + sin(frameCount/15)*35;
-  // ww = 15 + sin(frameCount/40)*50;
-  // e = 20 + cos(frameCount/10)*15;
-  adjustZoom()
   avgCubeSize = 0;
   for (let cube of cubes){
     avgCubeSize += cube.size;
@@ -56,12 +37,9 @@ function draw() {
     if (abs(cube.size) > 280){
       cube.size = random(20, 70);
     }
-
-    // console.log('cube.size', cube.size);
     drawCube(cube.x, cube.y, cube.z, cube.size);
   }
   avgCubeSize /= cubes.length;
-  
 }
 
 function generateCubes(numCubes, sizeRange, colors) {
@@ -112,16 +90,7 @@ function drawQuad(v1, v2, v3, v4) {
   endShape(CLOSE);
 }
 
-// using this to get a normal distribution, to similate a ripple
-function gaussian(x, mean, stdDev) {
-  let exponent = -((x - mean) ** 2) / (2 * stdDev ** 2);
-  return Math.exp(exponent);
-}
-
-
 function keyPressed() {
-
-
   if (keyIsDown(SHIFT) && key === 'A') {
     console.log("a Pressed! ", a);
     a -= 10;
@@ -158,27 +127,30 @@ function keyPressed() {
   }else if (key === 'e') {
     console.log("e Pressed! ", e);
     e += 10;
-  }
-  
-  
-  if (key === 'x') {
+  }else if (key === 'x') {
     console.log("x Pressed! adding cube");
     generateCubes(1, [30,70],['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
   }else if (key === 'z') {
     console.log("z Pressed! removing cube");
-    cubes.pop();
+    cubes.pop(random(0,cubes.length-1));
+  }else if (key === 'r') {
+    console.log("r Pressed! resetting modifiers");
+    a = 0;
+    d = 0;
+    q = 0;
+    w = 0;
+    e = 0;
+    ww = 0;
   }
 }
 
 function mousePressed(){
   if (mouseButton === LEFT) {
     console.log("Left Click at", mouseX, mouseY);
-    // extrusion(frameCount%CANVASX);
   } else if (mouseButton === RIGHT) {
     console.log("Right Click at", mouseX, mouseY);
   } else if (mouseButton === CENTER) {
-    // wibe cube list, and reenstate
-    console.log("Middle Click at", mouseX, mouseY);
+
     cubes = [];
     generateCubes(50, [10, 50], ['#FF5733', '#33FF57', '#3357FF', '#F3FF33']);
   }
@@ -187,17 +159,12 @@ function mousePressed(){
 // Function to adjust zoom based on object visibility - thanks cheebeetee
 function adjustZoom() {
   let sceneSize = avgCubeSize * 4; // Determine scene size
+  // limiter
   if (sceneSize < 250){
     sceneSize = 250;
   }
   let idealFov = map(sceneSize, 100, 400, Math.PI / 6, Math.PI / 2, true); // Map size to reasonable FOV
-  // console.log('idealFOV', idealFov);
-  // console.log('sceneSize', sceneSize);
-  
   let distance = sceneSize / (2 * tan(fov / 2)); // Adjusted camera distance
-  // console.log('distance', distance);
-  // targetFov = idealFov; // Set the target fov
   fov = lerp(fov, idealFov, 0.05);
-  // console.log('fov', fov);
   perspective(fov, CANVASX/CANVASY, 0.1, distance * 10);
 }
